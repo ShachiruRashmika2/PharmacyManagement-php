@@ -1,0 +1,17 @@
+.glass{
+    /* From https://css.glass */
+background: rgba(255, 255, 255, 0.2);
+
+box-shadow: 0 4px 60px rgba(0, 0, 0, 0.3);
+backdrop-filter: blur(5px);
+-webkit-backdrop-filter: blur(5px);
+
+}
+
+.backMesh{
+   
+    background-color: hsla(0, 0%, 100%, 1);
+    background-image: radial-gradient(circle at 91% 11%, hsla(241.99999999999997, 100%, 88%, 0.66) 4.038772213247173%, transparent 37.2265767974114%), radial-gradient(circle at 66% 37%, hsla(191.91176470588238, 100%, 88%, 1) 0%, transparent 63.33640956108327%), radial-gradient(circle at 36% 87%, hsla(136.32352941176467, 100%, 88%, 1) 12.107536057085522%, transparent 63.33640956108327%);
+    background-blend-mode: normal, normal, normal;
+
+}
