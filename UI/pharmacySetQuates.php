@@ -59,6 +59,57 @@ if (empty($images)) {
     $images = [];
 }
 
+ if($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+   header('Content-Type: application/json');
+
+$data = json_decode(file_get_contents("php://input"), true);
+ 
+
+$drugIDArray = $data['drugIdArray'] ?? [];
+$drugQtyArray = $data['drugQtyArray'] ?? [];
+$csv = $data['csv'] ?? '';
+$total = $data['total'] ?? 0;
+
+$stmt = $db->prepare("INSERT INTO quotes (prescriptionID, pharmacyID, customerID, total, csv) VALUES (?, ?, ?, ?, ?)");
+$stmt->bindValue(1, $priscpID, SQLITE3_INTEGER);
+$stmt->bindValue(2, $pharmacy['id'], SQLITE3_INTEGER);
+$stmt->bindValue(3, $order['customerID'], SQLITE3_INTEGER);
+$stmt->bindValue(4, $total, SQLITE3_FLOAT);
+$stmt->bindValue(5, $csv, SQLITE3_TEXT);
+if ($stmt->execute()) {
+    $quoteID = $db->lastInsertRowID();
+    
+    $insertQuery = "INSERT INTO quoteItems (quoteID, drugID, quantity) VALUES ";
+    $values = [];
+    
+    foreach ($drugIDArray as $index => $drugID) {
+        if (isset($drugQtyArray[$index])) {
+            $quantity = $drugQtyArray[$index];
+            $values[] = "($quoteID, '$drugID', $quantity)";
+        }
+    }
+    
+    if (!empty($values)) {
+        $insertQuery .= implode(", ", $values);
+        $db->exec($insertQuery);
+    }
+    
+    $stmt->close();
+   echo json_encode(['success' => true, 'message' => 'Quote created successfully!']);
+} else {
+    echo json_encode(['success' => false, 'message' => 'Error creating quote: ' . $db->lastErrorMsg()]);
+}
+exit();
+ }
+
+
+
+
+
+
+
+
 
 
 
@@ -200,7 +251,9 @@ if (empty($images)) {
                 <select class="border border-gray-300 rounded p-2 w-1/3" id="drugName">
                     <option value="" disabled selected>Select Drug</option>
                     <?php foreach ($drugs as $drug): ?>
-                        <option value="<?php echo $drug['name']; ?>" data-price="<?php echo $drug["price"]?>"> <?php echo $drug['name']; ?></option>
+                        <option value="<?php echo $drug['name'];?>" data-price="<?php echo $drug["price"]?>"
+                        data-id="<?php echo $drug['drugID']; ?>"
+                        > <?php echo $drug['name']; ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
@@ -233,6 +286,11 @@ if (empty($images)) {
 
 <script>
      let total = 0;
+      let drugIDs = [];
+      let drugQuantities = [];
+     
+     
+
      document.getElementById('totalAmount').innerText = total;
   function addDrug() {
  const drugSelect = document.getElementById('drugName');
@@ -241,6 +299,7 @@ const selectedOption = drugSelect.options[drugSelect.selectedIndex];
 const drug = drugSelect.value.trim();
 const quantity = parseInt(document.getElementById('quantityInput').value.trim());
 const amount = parseFloat(selectedOption.getAttribute('data-price'));
+const drugID = parseInt(selectedOption.getAttribute('data-id'));
    const tbody = document.getElementById('drugTableBody');
 console.log(amount, drug, quantity);
 
@@ -249,6 +308,11 @@ console.log(amount, drug, quantity);
       return;
     }
      total = total + (amount * quantity);
+    drugIDs.push(drugID);
+    drugQuantities.push(quantity);
+
+      console.log(drugIDs, drugQuantities);
+   
 
     const row = document.createElement('tr');
     row.innerHTML = `
@@ -258,22 +322,27 @@ console.log(amount, drug, quantity);
     `;
     tbody.appendChild(row);
 
+
+
  
   document.getElementById('totalAmount').innerText = total.toFixed(2);
 
-    document.getElementById('drugInput').value = '';
+    document.getElementById('drugName').value = '';
     document.getElementById('quantityInput').value = '';
   
     
   }
 
  
-function updateTotals(amount, quantity) {
- 
- 
-}
+
 
   function exportTable() {
+
+
+
+
+
+
     const rows = document.querySelectorAll("table tr");
     const csv = [];
 
@@ -285,6 +354,36 @@ function updateTotals(amount, quantity) {
 
     const csvString = csv.join("\n");
     const blob = new Blob([csvString], { type: "text/csv" });
+const prescriptionID = <?php echo json_encode($priscpID); ?>;
+
+fetch(`pharmacySetQuates.php?id=${prescriptionID}`, {
+  method: 'POST',
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    drugIdArray:drugIDs ,
+    drugQtyArray: drugQuantities,
+    csv:csvString,
+    total: total,
+  })
+})
+.then(res => res.json())
+.then(data => {
+  if (data.success) {
+    alert(data.message); 
+
+    window.location.href = `pahrmacyDashboard.php`;
+    
+  } else {
+    alert("Failed: " + data.message);
+    window.location.href = `pahrmacyDashboard.php`;
+  }
+})
+
+
+
+
     const url = URL.createObjectURL(blob);
 
     const a = document.createElement("a");

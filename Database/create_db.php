@@ -42,6 +42,7 @@ $db->exec("CREATE TABLE IF NOT EXISTS quotes (
   status TEXT CHECK(status IN ('pending', 'accepted', 'rejected'))  DEFAULT 'pending',
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     total REAL NOT NULL,
+    csv TEXT,
     FOREIGN KEY (prescriptionID) REFERENCES prescription(prescriptionID),
     FOREIGN KEY (pharmacyID) REFERENCES users(id),
     FOREIGN KEY (customerID) REFERENCES users(id)
