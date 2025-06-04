@@ -2,10 +2,12 @@
 session_start();
 require_once '../Database/db.php';
 
-if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
+
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['userType']) || $_SESSION['userType'] !== 'user') {
+    header('Location: index.php');
     exit();
 }
+
 
 
 $user = [
@@ -85,60 +87,70 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Tailwind Dashboard</title>
+  <title>Alpha Pharma</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="./styles/user.css">
 
-</head>
-<body class="font-sans backMesh ">
+</head> 
+<body class="font-sans backGrad overflow-hidden">
 
 <div class="flex h-screen">
-    <!-- Sidebar -->
- <aside class="w-24 h-screen flex flex-col justify-between bg-transparent  relative rounded-r-3xl">
+  <aside class="w-24 h-screen flex flex-col justify-between bg-transparent  relative rounded-r-3xl">
 
-  <div class="p-6 text-xl font-bold text-blue-600">
-    T
+  <div class="p-6 text-xl font-bold text-blue-600 flex flex-col items-center justify-center">
+   <img src="./Assets/Untitled-3.png" alt="Logo" class="w-12 h-12 rounded-full mx-auto">
+
+   <div class=" text-slate-100 mt-4" style="writing-mode: vertical-rl;">
+Alpha Pharma
+</div>
   </div>
 
 
   <nav class="absolute top-1/2 left-0 w-full -translate-y-1/2 flex flex-col items-center gap-4">
-    <a href="#" class="block px-6 py-2 text-slate-600 hover:bg-blue-100 hover:text-blue-900 rounded-full">
+    <a href="pahrmacyDashboard.php" class="block px-6 py-2 bg-blue-100 text-blue-900 rounded-full">
       <i class="fa-solid fa-house text-2xl"></i>
     </a>
-    <a href="#" class="block px-6 py-2  text-slate-600 hover:bg-blue-100 hover:text-blue-900 rounded-full">
+    <a href="#" class="block px-6 py-2   text-slate-100 hover:bg-blue-100 hover:text-blue-900 rounded-full">
       <i class="fa-solid fa-truck-medical text-2xl"></i>
     </a>
-    <a href="#" class="block px-6 py-2  text-slate-600 hover:bg-blue-100 hover:text-blue-900 rounded-full">
+    <a href="userQuotes.php" class="block px-6 py-2  text-slate-100 hover:bg-blue-100 hover:text-blue-900 rounded-full">
       <i class="fa-solid fa-suitcase-medical text-2xl"></i>
     </a>
   </nav>
 
 
   <div class="p-6">
-    B
+ <a href="../PHP/logout.php" class="flex items-center shadow-xl justify-center px-6 py-2 text-slate-100 hover:bg-blue-100 hover:text-blue-900 rounded-full">
+    
+      <i class="fa-solid fa-right-from-bracket text-xl"></i>
+    </a>
   </div>
 </aside>
-
 
   
     <div class="flex-1 flex flex-col m-2 rounded-[36px]  glass  bg-[url('./Assets/Asset3.png')] bg-contain bg-center">
     
       <header class="glass shadow p-4 px-8 flex justify-between items-center rounded-t-[36px]">
-        <h1 class="text-xl font-semibold">Welcome, User</h1>
-        <div class="text-gray-500">📅 June 2, 2025</div>
+           <h1 class="text-xl font-semibold ">Welcome ! <?php echo $user['userName']; ?></h1>
+           <div class="text-gray-800">📅 <?php echo  date('F j, Y') ?></div>
       </header>
 
      
       <main class="p-6 overflow-y-auto">
-        <div class="bg-white rounded-lg shadow p-6">
+         <header class="bg-white bg-opacity-75 shadow-lg p-4 px-8 flex justify-between items-center rounded-t-lg ">
+        <h1 class="text-xl font-semibold ">Upload Prescriptions</h1>
+
+        
+      </header>
+        <div class="bg-white bg-opacity-75 rounded-b-lg shadow p-6">
           <h2 class="text-lg font-semibold mb-4">Upload Your Prescription</h2>
 
          
           <form class="space-y-4" action="userDashboard.php" method="POST" enctype="multipart/form-data">
             <div>
-              <label class="block text-sm font-medium">Note</label>
-              <textarea class="w-full mt-1 p-2 border rounded" rows="3" name="note"></textarea>
+              <label class="block text-sm font-medium my-2">Note</label>
+              <textarea  class="w-full bg-white bg-opacity-75  px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" rows="3" name="note"></textarea>
             </div>
 
            <div>
@@ -269,13 +281,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <div>
-              <label class="block text-sm font-medium">Delivery Address</label>
-              <input type="text" class="w-full mt-1 p-2 border rounded" name="address" />
+              <label class="block text-sm font-medium my-2">Delivery Address</label>
+              <input type="text"  class="w-full bg-white bg-opacity-75  px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" name="address" />
             </div>
 
             <div>
-              <label class="block text-sm font-medium">Select Delivery Time Slot</label>
-              <select class="w-full mt-1 p-2 border rounded" name="timeslot">
+              <label class="block text-sm font-medium my-2">Select Delivery Time Slot</label>
+              <select  class=" bg-white bg-opacity-75  px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" name="timeslot">
                 <option>08:00 AM - 10:00 AM</option>
                 <option>10:00 AM - 12:00 PM</option>
                 <option>12:00 PM - 02:00 PM</option>
@@ -286,8 +298,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
              <div>
-              <label class="block text-sm font-medium">Pharmacies</label>
-              <select class="w-full mt-1 p-2 border rounded" name="pharmacyID">
+              <label class="block text-sm font-medium my-2">Pharmacies</label>
+              <select  class="w-full bg-white bg-opacity-75  px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" name="pharmacyID">
                 <?php foreach ($pharmacies as $pharmacy): ?>
                   <option value="<?php echo $pharmacy['id']; ?>"><?php echo $pharmacy['name']; ?></option>
                 <?php endforeach; ?>

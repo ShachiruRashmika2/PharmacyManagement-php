@@ -15,3 +15,7 @@ backdrop-filter: blur(5px);
     background-blend-mode: normal, normal, normal;
 
 }
+.backGrad{
+
+   background: #8ceded;
+background: radial-gradient(circle, rgba(140, 237, 237, 1) 0%, rgba(0, 167, 209, 1) 55%, rgba(3, 135, 168, 1) 100%);}

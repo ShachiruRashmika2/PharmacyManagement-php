@@ -1,0 +1,19 @@
+# Ignore Composer dependencies
+/vendor/
+
+# Ignore PHPMailer if added manually (not via Composer)
+phpmailer/
+PHPMailer/
+
+# Ignore PDF libraries (TCPDF, FPDF, etc.)
+fpdf/
+tcpdf/
+dompdf/
+
+# Ignore system files
+*.log
+*.DS_Store
+Thumbs.db
+
+# Ignore SQLite DB (if it should not be versioned)
+db/*.sqlite
